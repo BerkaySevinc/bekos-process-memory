@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 
 
@@ -990,7 +985,7 @@ public class MemoryManipulator : IDisposable
             return (UIntPtr)(ulong)process!.MainModule!.BaseAddress;
         }
 
-        // If Only Hexdecimal
+        // If Only Hexadecimal
         try
         {
             return
