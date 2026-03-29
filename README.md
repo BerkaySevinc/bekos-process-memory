@@ -16,7 +16,7 @@ It provides a typed API for common memory operations — including pointer-chain
 
 ## Details
 
-- Written in **C#**, targeting **.NET 10**.
+- Written in **C#**.
 - Windows only — uses `kernel32.dll` via P/Invoke (`ReadProcessMemory`, `WriteProcessMemory`, `CreateToolhelp32Snapshot`).
 - Requires **Administrator privileges** at runtime; throws `UnauthorizedAccessException` otherwise.
 - No external NuGet dependencies.
@@ -50,10 +50,15 @@ int health = mem.Read<int>("0x12AB34CD");
 float speed = mem.Read<float>("game.exe+0x1A2B3C", isOffsetsHexdecimal: true);
 
 // Read via pointer chain: dereference base+0x10, then add 0x20, then 0x3C
-int ammo = mem.Read<int>("game.exe+0x10,0x20,0x3C", isOffsetsHexdecimal: true);
+int ammo = mem.Read<bool>("game.exe+0x10,0x20,0x3C", isOffsetsHexdecimal: true);
 
 // Read a UTF-8 string (up to 32 bytes, null-terminated)
 string name = mem.ReadString("0x00AABBCC", bytesLength: 32);
+
+// Resolve a pointer, then read a field at an offset from it
+UIntPtr module = mem.GetModuleAddressByName("engine.dll");
+UIntPtr entity = mem.ReadPointer(module + 0x1A2B3C);
+int health = mem.Read<int>(entity + 0x100);
 ```
 
 ### Writing memory
@@ -70,7 +75,8 @@ mem.Write<float>("0x12AB34CD", 9999.0f);
 mem.Subscribe<int>("game.exe+0x1A2B3C", value =>
 {
     Console.WriteLine($"Health: {value}");
-}, interval: 100, isOffsetsHexdecimal: true);
+}, 
+interval: 100, isOffsetsHexdecimal: true);
 
 // Stop polling
 mem.Unsubscribe("game.exe+0x1A2B3C");
